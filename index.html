@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        *:focus {
+            outline: none;
+        }
+
+        .mainAfter::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgb(194, 193, 193);
+            opacity: 0.8;
+            animation-name: fadeIn;
+            animation-duration: 2s;
+            animation-fill-mode: ease-in-out;
+        }
+
+        /* user input tasks style */
+
+        form {
+            width: 90%;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        form input,
+        form button,
+        #save,
+        #cancel {
+            border-radius: 30px;
+            box-shadow: none;
+            border: none;
+        }
+
+        form input {
+            padding: 13px 20px;
+            margin-right: 2.7rem;
+            width: 58%;
+            background-color: #eee;
+        }
+
+        form input,
+        form input::placeholder {
+            letter-spacing: 0.7px;
+        }
+
+        form button,
+        #save {
+            padding: 13px 20px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background-image: linear-gradient(90deg, gold, lightseagreen);
+            color: #fff;
+        }
+
+        #cancel {
+            padding: 13px 20px;
+            margin-right: 1%;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+            border: 1px solid lightseagreen;
+            color: lightseagreen;
+        }
+
+        /* the four sections style */
+
+        #container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        #container section {
+            width: 23%;
+            border: 3px solid #eee;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .tasksSection {
+            height: 60vh;
+            width: 100%;
+        }
+
+        #container section h2 {
+            text-align: center;
+            padding: 15px;
+            margin: 0 0 5px 0;
+        }
+
+        .green,
+        #Approved li {
+            background-color: greenyellow;
+            color: #fff;
+        }
+
+        .red,
+        #hold li {
+            background-color: crimson;
+            color: #fff;
+        }
+
+        .gold,
+        #inProgress li {
+            background-color: gold;
+            color: #fff;
+        }
+
+        .blue,
+        #review li {
+            background-color: lightseagreen;
+            color: #fff;
+        }
+
+        li {
+            width: fit-content;
+            padding: 20px;
+            list-style: none;
+            text-align: center;
+            margin-bottom: 5px;
+            position: relative;
+        }
+
+        /* list options buttons */
+
+        li p {
+            display: flex;
+            align-items: center;
+        }
+
+        li p span {
+            margin-right: 20%;
+        }
+
+        .listOptionsWrapper {
+            width: 100%;
+            background-color: #fff;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            border: 0.5px solid;
+            display: none;
+        }
+
+        .listOptionsWrapper button {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 10px;
+            color: #333;
+        }
+
+        .listOptionsWrapper button:first-child {
+            border-bottom: 0.5px solid;
+        }
+
+        /* list options border colors */
+
+        #inProgress .listOptionsWrapper,
+        #inProgress .listOptionsWrapper button {
+            border-color: gold;
+        }
+
+        #hold .listOptionsWrapper,
+        #hold .listOptionsWrapper button {
+            border-color: crimson;
+        }
+
+        #review .listOptionsWrapper,
+        #review .listOptionsWrapper button {
+            border-color: lightseagreen;
+        }
+
+        #Approved .listOptionsWrapper,
+        #Approved .listOptionsWrapper button {
+            border-color: greenyellow;
+        }
+
+        /* descrition box style */
+
+        #descrpContainer {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            background-color: #fff;
+            box-shadow: 0px -8px 20px rgb(165, 164, 164);
+            max-height: 0;
+            animation-name: hide;
+            animation-duration: 2s;
+            animation-fill-mode: ease-in-out;
+        }
+
+        #descrpWrapper {
+            width: 90%;
+            margin: 0 auto;
+            text-align: center;
+            padding: 10vh 0;
+            z-index: 100;
+        }
+
+        #description {
+            border: none;
+            width: 100%;
+            height: 50vh;
+            margin-bottom: 10vh;
+            padding: 3vh;
+            background-color: #eee;
+        }
+
+        #description,
+        #description::placeholder {
+            font-size: 1rem;
+        }
+
+        /* animation to desplay decription box */
+
+        @keyframes show {
+            100% {
+                max-height: 90vh;
+            }
+        }
+
+        @keyframes hide {
+            100% {
+                max-height: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeOut {
+            100% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <!-- user will input the task here -->
+        <form>
+            <input type="text" placeholder="Enter a task" id="userInput">
+            <button id="submit">Add to list</button>
+        </form>
+        <!-- four sections for tasks -->
+        <section id="container">
+            <section>
+                <h2 class=" h2-style gold">In Progress</h2>
+                <ul class="tasksSection" id="inProgress"></ul>
+            </section>
+            <section>
+                <h2 class="h2-style red">On Hold</h2>
+                <ul class="tasksSection" id="hold">
+                </ul>
+            </section>
+            <section>
+                <h2 class="h2-style blue">In Review</h2>
+                <ul class="tasksSection" id="review"></ul>
+            </section>
+            <section>
+                <h2 class="h2-style green">Approved</h2>
+                <ul class="tasksSection" id="Approved"></ul>
+            </section>
+        </section>
+    </main>
+    <!-- descriptions and notes for each task -->
+    <section id="descrpContainer">
+        <section id="descrpWrapper">
+            <textarea id="description" placeholder="Enter your notes about this task"></textarea>
+            <button id="cancel">Cancel</button>
+            <button id="save">Save Changes</button>
+        </section>
+    </section>
+    <script>
+        var storage = [];
+        var liId = 0;
+        var spanId = 0;
+        var noteBtnClicked = 0;
+
+        // self invoke function to get elements from local store
+        (function () {
+            if (getItemOnLocalStorage('tasks')) {
+                var parsed = JSON.parse(getItemOnLocalStorage('tasks'));
+                var max = 0;
+                for (var i = 0; i < parsed.length; i++) {
+                    creatElement(parsed[i]);
+                    if (parsed[i].id > max) {
+                        max = parsed[i].id;
+                    }
+                }
+                storage = parsed;
+                liId = max;
+                spanId = max * -1;
+            }
+        })();
+
+        // sections events
+        var domSections = document.getElementsByClassName('tasksSection');
+        for (var i = 0; i < domSections.length; i++) {
+            addEventsTosection(domSections[i]);
+        }
+
+        function addEventsTosection(section) {
+            section.addEventListener('dragover', function (event) {
+                event.preventDefault();
+            });
+            section.addEventListener('drop', function (event) {
+                if (event.target.className == 'tasksSection') {
+                    event.target.appendChild(document.getElementById(event.dataTransfer.getData('text')));
+                    var liSpanId = ((parseInt(event.dataTransfer.getData('text'))) * -1) + '';
+                    // to change the parent of the element in data
+                    var elementObj = {
+                        id: parseInt(event.dataTransfer.getData('text')),
+                        value: document.getElementById(liSpanId).innerText,
+                        parent: event.target.id
+                    }
+                    storage.push(elementObj);
+                    // to store data in local storage
+                    setItemOnLocalStorage('tasks', JSON.stringify(storage));
+                }
+            });
+        }
+
+        // submite btn function
+        document.getElementById('submit').addEventListener('click', function (e) {
+            if (document.getElementById('userInput').value) {
+                e.preventDefault();
+                var objData = {
+                    id: ++liId,
+                    value: document.getElementById('userInput').value,
+                    parent: 'inProgress'
+                }
+                creatElement(objData); // this function create new element and push its data into storage array
+                setItemOnLocalStorage('tasks', JSON.stringify(storage));
+                document.getElementById('userInput').value = '';
+            } else {
+                alert('There is no data to be added');
+            }
+        });
+
+        // functions to create new element (task)
+        function creatElement(objData) {
+            var obj = {
+                id: objData.id,
+                value: objData.value,
+                parent: objData.parent
+            }
+            var list = document.createElement('li');
+            document.getElementById(obj.parent).appendChild(list);
+            createListChildren(list, objData.id);
+            document.getElementById(spanId + '').innerText = obj.value;
+            list.id = objData.id;
+            list.setAttribute('draggable', true);
+            list.addEventListener('dragstart', function (event) {
+                event.dataTransfer.setData('text', event.target.id);
+                for (var i = 0; i < storage.length; i++) {
+                    if (storage[i].id == event.target.id) {
+                        storage.splice(i, 1);
+                    }
+                }
+            })
+            storage.push(obj);
+        }
+
+        function createListChildren(list, id) {
+            //create elements
+            var paragraph = document.createElement('p');
+            var spanCreated = document.createElement('span');
+            var icon = document.createElement('i');
+            var uList = document.createElement('ul');
+            var note = document.createElement('button');
+            note.innerText = 'Notes';
+            var del = document.createElement('button');
+            del.innerText = 'Delete';
+
+            // set IDs and Classes to them
+            spanCreated.id = --spanId;
+            icon.className = 'fas fa-angle-down';
+            icon.id = 'i' + id;
+            uList.className = 'listOptionsWrapper';
+            note.className = 'notes';
+            del.className = 'delete';
+
+            // add event listener to them
+            icon.addEventListener('click', handleIconClick);
+            note.addEventListener('click', handleNoteBtnClick);
+            del.addEventListener('click', handleDeleteBtnClick);
+
+            // appent each one to parent
+            list.appendChild(paragraph);
+            list.appendChild(uList);
+            paragraph.appendChild(spanCreated);
+            paragraph.appendChild(icon);
+            uList.appendChild(note);
+            uList.appendChild(del);
+        }
+
+        // functions to set and get elements from local store
+
+        function setItemOnLocalStorage(key, value) {
+            localStorage.setItem(key, value);
+        }
+
+        function getItemOnLocalStorage(key) {
+            return localStorage.getItem(key)
+        }
+
+        // ----------------------------------------------------------------
+        // note and delete functions
+        // ----------------------------------------------------------------
+
+        // function to display ul list or hide it (togle)
+        function handleIconClick(e) {
+            var uList = document.getElementById(e.target.id).parentElement.nextSibling;
+            if (e.target.className == 'fas fa-angle-down') {
+                e.target.className = 'fas fa-angle-up';
+                uList.style.display = 'block';
+                uList.style.zIndex = '1';
+            } else {
+                e.target.className = 'fas fa-angle-down';
+                uList.style.display = 'none';
+                uList.style.zIndex = '0';
+            }
+        }
+
+        // ------------------------------------------------------
+        // ------------------------------------------------------
+
+        function handleNoteBtnClick(e) {
+            // close the ul of buttons 
+            var icon = e.target.parentElement.parentElement.children[0].children[1];
+            icon.className = 'fas fa-angle-down';
+            var uList = e.target.parentElement;
+            uList.style.display = 'none';
+            uList.style.zIndex = '0';
+
+            // save which element clicked
+            noteBtnClicked = e.target.parentElement.parentElement.id;
+
+            // if this element has previous note --> display it
+            for (var i = 0; i < storage.length; i++) {
+                if (storage[i].id == noteBtnClicked && storage[i].note) {
+                    document.getElementById('description').value = storage[i].note;
+                }
+            }
+
+            // make note section appear and be stable after that
+            document.getElementById('descrpContainer').style.animationName = 'show';
+            setTimeout(function () {
+                document.getElementById('descrpContainer').style.maxHeight = '90vh';
+            }, 1800);
+
+            // gave the background grey overlay
+            document.getElementsByTagName('main')[0].className = 'mainAfter';
+        }
+
+        // ------------------------------------------------------
+        // ------------------------------------------------------
+
+        function handleDeleteBtnClick(e) {
+            var confirmation = confirm('Do you want to delete this task?')
+            if (confirmation) {
+                var targetId = e.target.parentElement.parentElement.id;
+                var newStorage = [];
+
+                // delete from storage array
+                for (var i = 0; i < storage.length; i++) {
+                    if (storage[i].id != targetId) {
+                        newStorage.push(storage[i]);
+                    }
+                }
+                storage = newStorage;
+                // delete from local storage
+                setItemOnLocalStorage('tasks', JSON.stringify(storage));
+
+                // delete from dom tree
+                document.getElementById(targetId).remove();
+            }
+        }
+
+        // ------------------------------------------------------
+        // save and cancel btns listeners
+        // ------------------------------------------------------
+
+        document.getElementById('cancel').addEventListener('click', cancelNoteHandler);
+        document.getElementById('save').addEventListener('click', saveNoteHandler);
+
+        function cancelNoteHandler() {
+
+            // empty the note text area
+            setTimeout(function () {
+                document.getElementById('description').value = '';
+            }, 2000);
+
+            // make note section disapear
+            document.getElementById('descrpContainer').style.animationName = 'hide';
+            setTimeout(function () {
+                document.getElementById('descrpContainer').style.maxHeight = '0';
+            }, 1800);
+
+            // remove the background grey overlay
+            document.getElementsByTagName('main')[0].className = '';
+        }
+
+        function saveNoteHandler() {
+            for (var i = 0; i < storage.length; i++) {
+                if (storage[i].id == noteBtnClicked) {
+                    storage[i].note = document.getElementById('description').value;
+                }
+            }
+            setItemOnLocalStorage('tasks', JSON.stringify(storage));
+
+            // empty the note text area and close it
+            cancelNoteHandler();
+        }
+    </script>
+</body>
+
+</html>
